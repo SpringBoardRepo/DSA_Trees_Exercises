@@ -18,6 +18,22 @@ class BinaryTree {
 
   minDepth() {
 
+    if (!this.root) return 0;
+
+    let minHeight;
+    function minDepthHelper(node) {
+
+      if (node.left === null && node.right === null) return 0;
+      if (node.left === null) return minDepthHelper(node.right) + 1;
+      if (node.right === null) return minDepthHelper(node.left) + 1;
+
+      let minHeightLeft = minDepthHelper(node.left) + 1;
+      let minHeightRight = minDepthHelper(node.right) + 1;
+      minHeight = Math.min(minHeightLeft, minHeightRight) + 1;
+      return minHeight;
+    }
+    minDepthHelper(this.root);
+    return minHeight;
   }
 
   /** maxDepth(): return the maximum depth of the tree -- that is,
@@ -25,20 +41,64 @@ class BinaryTree {
 
   maxDepth() {
 
+    if (!this.root) return 0;
+    let maxHeight;
+    function maxDepthHelper(node) {
+
+      if (node.left === null && node.right === null) return 1;
+      let leftHeight = maxDepthHelper(node.left);
+      let rightHeight = maxDepthHelper(node.right);
+      maxHeight = Math.max(leftHeight, rightHeight) + 1;
+      return maxHeight;
+    }
+
+    maxDepthHelper(this.root);
+    return maxHeight;
   }
 
   /** maxSum(): return the maximum sum you can obtain by traveling along a path in the tree.
    * The path doesn't need to start at the root, but you can't visit a node more than once. */
 
   maxSum() {
+    let result = 0;
 
+    function maxSumHelper(node) {
+      if (node === null) return 0;
+      const leftSum = maxSumHelper(node.left);
+      const rightSum = maxSumHelper(node.right);
+      result = Math.max(result, node.val + leftSum + rightSum);
+      return Math.max(0, leftSum + node.val, rightSum + node.val);
+    }
+
+    maxSumHelper(this.root);
+    return result;
   }
 
   /** nextLarger(lowerBound): return the smallest value in the tree
    * which is larger than lowerBound. Return null if no such value exists. */
 
   nextLarger(lowerBound) {
+    if (!this.root) return null;
 
+    // let's use BFS for this!
+    let queue = [this.root];
+    let closest = null;
+
+    while (queue.length) {
+      let currentNode = queue.shift();
+      let currentVal = currentNode.val;
+      let higherThanLowerBound = currentVal > lowerBound;
+      let shouldReassignClosest = currentVal < closest || closest === null;
+
+      if (higherThanLowerBound && shouldReassignClosest) {
+        closest = currentVal;
+      }
+
+      if (currentNode.left) queue.push(currentNode.left);
+      if (currentNode.right) queue.push(currentNode.right);
+    }
+
+    return closest;
   }
 
   /** Further study!
@@ -68,7 +128,7 @@ class BinaryTree {
    * of two nodes in a binary tree. */
 
   lowestCommonAncestor(node1, node2) {
-    
+
   }
 }
 
